@@ -1,0 +1,12 @@
+{
+    "name": "com.kekser.save-system",
+    "displayName": "SaveSystem",
+    "author": { "name": "Kekser", "url": "https://github.com/DerKekser" },
+    "version": "1.0.0",
+    "unity": "2020.3",
+    "description": "A save system for unity.",
+    "keywords": [ "save", "load" ],
+    "license": "MIT",
+    "category": "Task",
+    "dependencies": {}
+}

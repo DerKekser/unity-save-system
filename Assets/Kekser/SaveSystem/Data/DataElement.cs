@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Game.Scripts.SaveSystem.Data
+namespace Kekser.SaveSystem.Data
 {
     public class DataElement : IData
     {

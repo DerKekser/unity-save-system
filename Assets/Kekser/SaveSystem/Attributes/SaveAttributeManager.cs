@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Game.Scripts.SaveSystem.Data;
+using Kekser.SaveSystem.Data;
 using UnityEngine;
 
-namespace Game.Scripts.SaveSystem.Attributes
+namespace Kekser.SaveSystem.Attributes
 {
     public static class SaveAttributeManager
     {

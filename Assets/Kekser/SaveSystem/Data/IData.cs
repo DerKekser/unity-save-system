@@ -1,4 +1,4 @@
-﻿namespace Game.Scripts.SaveSystem.Data
+﻿namespace Kekser.SaveSystem.Data
 {
     public interface IData
     {

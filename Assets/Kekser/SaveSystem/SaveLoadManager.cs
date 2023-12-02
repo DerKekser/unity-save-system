@@ -2,12 +2,12 @@
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
-using Game.Scripts.SaveSystem.Attributes;
-using Game.Scripts.SaveSystem.Data;
+using Kekser.SaveSystem.Attributes;
+using Kekser.SaveSystem.Data;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Game.Scripts.SaveSystem
+namespace Kekser.SaveSystem
 {
     public class SaveLoadManager : MonoBehaviour
     {

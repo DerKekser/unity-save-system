@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Game.Scripts.SaveSystem.Attributes;
+using Kekser.SaveSystem.Attributes;
 using UnityEditor;
 using UnityEngine;
 
-namespace Game.Scripts.SaveSystem
+namespace Kekser.SaveSystem
 {
     [InitializeOnLoad]
     public static class CheckForSavableEditor

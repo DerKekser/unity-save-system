@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Game.Scripts.SaveSystem.Attributes
+namespace Kekser.SaveSystem.Attributes
 {
     [AttributeUsage(AttributeTargets.Field)]
     public class SavableAttribute : Attribute

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Game.Scripts.SaveSystem
+namespace Kekser.SaveSystem
 {
     public class PrefabRegistry : ScriptableObject
     {

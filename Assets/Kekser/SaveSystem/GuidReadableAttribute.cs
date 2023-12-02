@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Game.Scripts.SaveSystem
+namespace Kekser.SaveSystem
 {
     [System.AttributeUsage(System.AttributeTargets.Field)]
     public class GuidReadableAttribute : PropertyAttribute

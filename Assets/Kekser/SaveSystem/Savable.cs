@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
 
-namespace Game.Scripts.SaveSystem
+namespace Kekser.SaveSystem
 {
     [DisallowMultipleComponent]
     public sealed class Savable : MonoBehaviour

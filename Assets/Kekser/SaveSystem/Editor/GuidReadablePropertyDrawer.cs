@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace Game.Scripts.SaveSystem
+namespace Kekser.SaveSystem
 {
     [CustomPropertyDrawer(typeof(GuidReadableAttribute))]
     public class GuidReadablePropertyDrawer : PropertyDrawer

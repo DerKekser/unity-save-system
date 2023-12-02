@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Game.Scripts.SaveSystem
+namespace Kekser.SaveSystem
 {
     [CustomEditor(typeof(PrefabRegistry))]
     public class PrefabRegistryEditor : Editor

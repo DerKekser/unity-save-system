@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Game.Scripts.SaveSystem.Data
+namespace Kekser.SaveSystem.Data
 {
     public class DataObject : IData
     {

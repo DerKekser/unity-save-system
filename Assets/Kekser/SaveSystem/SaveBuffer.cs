@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Game.Scripts.SaveSystem
+namespace Kekser.SaveSystem
 {
     public class SaveBuffer
     {

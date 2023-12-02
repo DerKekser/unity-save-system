@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Game.Scripts.SaveSystem.Data;
+using Kekser.SaveSystem.Data;
 using UnityEditor;
 using UnityEngine;
 
-namespace Game.Scripts.SaveSystem
+namespace Kekser.SaveSystem
 {
     public class SaveAnalyseWindow : EditorWindow
     {

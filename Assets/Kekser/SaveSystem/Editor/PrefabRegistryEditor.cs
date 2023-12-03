@@ -10,7 +10,7 @@ namespace Kekser.SaveSystem
         [MenuItem("Tools/Save System/Update Prefabs")]
         private static void UpdatePrefabs()
         {
-            PrefabRegistry prefabRegistry = (PrefabRegistry) AssetDatabase.LoadAssetAtPath("Assets/Game/Resources/PrefabRegistry.asset", typeof(PrefabRegistry));
+            PrefabRegistry prefabRegistry = (PrefabRegistry) AssetDatabase.LoadAssetAtPath("Assets/Resources/PrefabRegistry.asset", typeof(PrefabRegistry));
             if (prefabRegistry == null)
             {
                 if (!AssetDatabase.IsValidFolder("Assets/Resources"))

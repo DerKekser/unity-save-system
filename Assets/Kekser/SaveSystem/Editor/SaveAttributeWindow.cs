@@ -12,10 +12,11 @@ namespace Kekser.SaveSystem
         {
             var window = GetWindow<SaveAttributeWindow>();
             window.titleContent = new GUIContent("Save Attributes");
+            window._savePath = Application.persistentDataPath + "/save.sav";
             window.Show();
         }
         
-        private string _savePath = Application.persistentDataPath + "/save.sav";
+        private string _savePath;
         private Vector2 _scrollPos;
 
         private void OnGUI()

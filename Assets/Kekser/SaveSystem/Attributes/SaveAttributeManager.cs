@@ -58,7 +58,7 @@ namespace Kekser.SaveSystem.Attributes
             
             foreach (Assembly assembly in assemblies)
             {
-                if (!assembly.FullName.StartsWith("Assembly-CSharp"))
+                if (!assembly.FullName.StartsWith("Assembly-CSharp") && !assembly.FullName.StartsWith("SaveSystem"))
                     continue;
                 
                 Type[] types = assembly.GetTypes();

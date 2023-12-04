@@ -1,13 +1,13 @@
-# Save System
+# Unity - Save System
 
 [Save System](https://github.com/DerKekser/unity-save-system) is a simple save system for Unity.
 It allows you to save and load scene objects and their components.
 
 ## Contents
 - [Saving and Loading](#saving-and-loading)
-- [Using the Saveable Component](#using-the-saveable-component)
+- [Using the Savable Component](#using-the-savable-component)
 - [Prefab Registry](#prefab-registry)
-- [Create your own Saveable Component](#create-your-own-saveable-component)
+- [Create your own Savable Component](#create-your-own-savable-component)
 - [Data Types](#data-types)
 - [Supported Types](#supported-types)
 - [Install via git URL](#install-via-git-url)
@@ -25,7 +25,7 @@ using Kekser.SaveSystem;
 SaveLoadManager.Save(path);
 SaveLoadManager.Load(path);
 ```
-### Using the Saveable Component
+### Using the Savable Component
 
 You can save and load a scene object by adding the `Savable` component to it.
 You can use it on any scene object, but it is recommended to use it on Prefabs.
@@ -44,10 +44,9 @@ This is a manual process, and needs to be done every time you add a new prefab t
 
 ![Prefab Registry](/Assets/Kekser/Screenshots/create_update_prefab_registry.png)
 
-### Create your own Saveable Component
+### Create your own Savable Component
 
-You can create your own saveable component by using the `Savable`, `Save` or `Load` attribute.
-
+You can create your own savable component by using the `Savable`, `Save` or `Load` attribute.\
 #### Fields
 ```csharp
 using Kekser.SaveSystem;
@@ -73,13 +72,14 @@ private void Load(DataObject data)
     _score = dataObject.Get<DataElement>("Score").ToObject<int>();
 }
 ```
+*These attributes are also usable on static fields and methods.*
 ### Data Types
 #### DataObject
 The `DataObject` class is a dictionary that contains other `DataObject`, `DataArray` and `DataElement` objects.
 #### DataArray
 The `DataArray` class is a list that contains other `DataObject`, `DataArray` and `DataElement` objects.
 #### DataElement
-The `DataElement` class is a wrapper for any supported objects.
+The `DataElement` class is a wrapper for any [supported types](#supported-types).
 
 ### Supported Types
 - `byte[]`
@@ -104,11 +104,11 @@ The `DataElement` class is a wrapper for any supported objects.
 
 ### Install via git URL
 
-You can add this package to your project by adding this git URL
-
+You can add this package to your project by adding this git URL to the package manager:
 ```
 https://github.com/DerKekser/unity-save-system.git?path=Assets/Kekser/SaveSystem
 ```
+![Package Manager](/Assets/Kekser/Screenshots/package_manager.png)
 ### License
 
 This library is under the MIT License.

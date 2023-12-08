@@ -63,13 +63,13 @@ private int _score = 100;
 [Save]
 private void Save(DataObject data)
 {
-    dataObject.Add("Score", new DataElement(_score));
+    data.Add("Score", new DataElement(_score));
 }
 
 [Load]
 private void Load(DataObject data)
 {
-    _score = dataObject.Get<DataElement>("Score").ToObject<int>();
+    _score = data.Get<DataElement>("Score").ToObject<int>();
 }
 ```
 *These attributes are also usable on static fields and methods.*

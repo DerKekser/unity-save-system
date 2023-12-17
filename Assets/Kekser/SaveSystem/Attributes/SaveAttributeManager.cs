@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Kekser.SaveSystem.Data;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ namespace Kekser.SaveSystem.Attributes
 {
     public static class SaveAttributeManager
     {
+        private const string AssembliesToIgnoreRegex = @"^Unity\.|^UnityEngine\.|^mscorlib|^System\.|^Mono\.";
+        
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Initialize()
         {
@@ -58,7 +61,7 @@ namespace Kekser.SaveSystem.Attributes
             
             foreach (Assembly assembly in assemblies)
             {
-                if (!assembly.FullName.StartsWith("Assembly-CSharp") && !assembly.FullName.StartsWith("SaveSystem"))
+                if (Regex.IsMatch(assembly.FullName, AssembliesToIgnoreRegex))
                     continue;
                 
                 Type[] types = assembly.GetTypes();

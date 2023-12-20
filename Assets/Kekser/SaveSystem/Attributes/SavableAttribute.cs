@@ -3,7 +3,7 @@
 namespace Kekser.SaveSystem.Attributes
 {
     [AttributeUsage(AttributeTargets.Field)]
-    public class SavableAttribute : Attribute
+    public class SavableAttribute : SaveSystemAttribute
     {
         
     }

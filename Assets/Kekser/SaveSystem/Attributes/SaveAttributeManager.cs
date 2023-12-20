@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using Kekser.SaveSystem.Data;
 using UnityEngine;
 
@@ -55,13 +54,16 @@ namespace Kekser.SaveSystem.Attributes
             if (_prefabRegistry == null)
                 throw new Exception("PrefabRegistry not found! Save/Load system will not work!");
             
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            string definedIn = typeof(SaveSystemAttribute).Assembly.GetName().Name;
+
             Dictionary<Type, FieldInfo[]> checkedFields = new Dictionary<Type, FieldInfo[]>();
             Dictionary<Type, MethodInfo[]> checkedMethods = new Dictionary<Type, MethodInfo[]>();
             
-            foreach (Assembly assembly in assemblies)
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
-                if (Regex.IsMatch(assembly.FullName, AssembliesToIgnoreRegex))
+                if (assembly.GlobalAssemblyCache 
+                    || assembly.GetName().Name != definedIn 
+                    && assembly.GetReferencedAssemblies().All(assemblyName => assemblyName.Name != definedIn))
                     continue;
                 
                 Type[] types = assembly.GetTypes();

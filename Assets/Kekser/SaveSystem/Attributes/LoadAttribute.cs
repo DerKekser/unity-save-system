@@ -3,7 +3,7 @@
 namespace Kekser.SaveSystem.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
-    public class LoadAttribute : Attribute
+    public class LoadAttribute : SaveSystemAttribute
     {
         
     }

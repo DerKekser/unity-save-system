@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using Kekser.SaveSystem.Attributes;
 using UnityEditor;
@@ -74,3 +75,4 @@ namespace Kekser.SaveSystem
         }
     }
 }
+#endif

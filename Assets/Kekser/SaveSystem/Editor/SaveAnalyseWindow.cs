@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if UNITY_EDITOR
+using System.Collections.Generic;
 using System.IO;
 using Kekser.SaveSystem.Data;
 using UnityEditor;
@@ -101,3 +102,4 @@ namespace Kekser.SaveSystem
         }
     }
 }
+#endif

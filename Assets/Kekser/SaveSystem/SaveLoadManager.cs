@@ -11,6 +11,16 @@ namespace Kekser.SaveSystem
 {
     public class SaveLoadManager : MonoBehaviour
     {
+        private static void EnsureFolderExists(string path)
+        {
+            string directory = Path.GetDirectoryName(path);
+            if (string.IsNullOrEmpty(directory))
+                return;
+            if (Directory.Exists(directory))
+                return;
+            Directory.CreateDirectory(directory);
+        }
+        
         public static async Task<bool> Save(string file)
         {
             try
@@ -19,8 +29,10 @@ namespace Kekser.SaveSystem
                 dataObject.Add("Scene", new DataElement(SceneManager.GetActiveScene().name));
                 SaveAttributeManager.Save(dataObject);
                 
-                SaveBuffer saveData = new SaveBuffer();
+                LookUpSaveBuffer saveData = new LookUpSaveBuffer();
                 dataObject.DataSerialize(saveData);
+                
+                EnsureFolderExists(file);
                 File.WriteAllBytes(file, Compress(saveData.Data));
                 return true;
             }
@@ -38,7 +50,7 @@ namespace Kekser.SaveSystem
             try
             {
                 byte[] data = Decompress(File.ReadAllBytes(file));
-                SaveBuffer saveData = new SaveBuffer(data);
+                LookUpSaveBuffer saveData = new LookUpSaveBuffer(data);
                 
                 DataObject dataObject = new DataObject();
                 dataObject.DataDeserialize(saveData);

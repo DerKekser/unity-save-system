@@ -2,12 +2,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using Kekser.SaveSystem.Utils;
 
 namespace Kekser.SaveSystem
 {
+    public class LookUpSaveBuffer : SaveBuffer
+    {
+        public LookUpSaveBuffer() : base()
+        {
+        }
+        
+        public LookUpSaveBuffer(byte[] data) : base(data)
+        {
+        }
+        
+        public override byte[] Data
+        {
+            get => _lookUpTable.PrependHeader(base.Data);
+            set => base.Data = _lookUpTable.RemoveHeader(value);
+        }
+    }
+    
     public class SaveBuffer
     {
-        //TODO: Add a type lookup table to save space
+        protected static LookUpTable _lookUpTable = new LookUpTable();
         
         public SaveBuffer()
         {
@@ -18,48 +36,17 @@ namespace Kekser.SaveSystem
             Data = data;
         }
         
-        private int _length = 0;
         private int _offset = 0;
         
-        private byte[] _data = new byte[1024];
+        private DynamicArray _data = new DynamicArray();
 
-        public byte[] Data
+        public virtual byte[] Data
         {
-            get
-            {
-                byte[] result = new byte[_length];
-                Buffer.BlockCopy(_data, 0, result, 0, _length);
-                return result;
-            }
+            get => _data.Data;
             set
             {
-                if (value == null || value.Length == 0)
-                {
-                    _data = new byte[1024];
-                    _length = 0;
-                    _offset = 0;
-                }
-                else
-                {
-                    EnsureCapacity(value.Length);
-                    Buffer.BlockCopy(value, 0, _data, 0, value.Length);
-                    _length = value.Length;
-                    _offset = 0;
-                }
-            }
-        }
-        
-        private void EnsureCapacity(int requiredLength)
-        {
-            if (requiredLength > _data.Length)
-            {
-                int newLength = _data.Length;
-                while (newLength < requiredLength)
-                    newLength <<= 1;
-                
-                byte[] newData = new byte[newLength];
-                Buffer.BlockCopy(_data, 0, newData, 0, _length);
-                _data = newData;
+                _data.Data = value;
+                _offset = 0;
             }
         }
         
@@ -72,31 +59,23 @@ namespace Kekser.SaveSystem
             }
             
             SaveInt(value.Length);
-            EnsureCapacity(_length + value.Length);
-            Buffer.BlockCopy(value, 0, _data, _length, value.Length);
-            _length += value.Length;
+            _data.AddBytes(value);
         }
         public void SaveInt(int value)
         {
-            EnsureCapacity(_length + sizeof(int));
-            Buffer.BlockCopy(BitConverter.GetBytes(value), 0, _data, _length, sizeof(int));
-            _length += sizeof(int);
+            _data.AddBytes(BitConverter.GetBytes(value));
         }
         public void SaveFloat(float value)
         {
-            EnsureCapacity(_length + sizeof(float));
-            Buffer.BlockCopy(BitConverter.GetBytes(value), 0, _data, _length, sizeof(float));
-            _length += sizeof(float);
+            _data.AddBytes(BitConverter.GetBytes(value));
         }
         public void SaveBool(bool value)
         {
-            EnsureCapacity(_length + sizeof(bool));
-            Buffer.BlockCopy(BitConverter.GetBytes(value), 0, _data, _length, sizeof(bool));
-            _length += sizeof(bool);
+            _data.AddBytes(BitConverter.GetBytes(value));
         }
         public void SaveString(string value)
         {
-            SaveBytes(System.Text.Encoding.UTF8.GetBytes(value));
+            SaveInt(_lookUpTable.Add(value));
         }
         public void SaveVector2(UnityEngine.Vector2 value)
         {
@@ -252,32 +231,31 @@ namespace Kekser.SaveSystem
         public byte[] LoadBytes()
         {
             int length = LoadInt();
-            byte[] value = new byte[length];
-            Buffer.BlockCopy(_data, _offset, value, 0, length);
+            byte[] value = _data.GetBytes(_offset, length);
             _offset += length;
             return value;
         }
         public int LoadInt()
         {
-            int value = BitConverter.ToInt32(_data, _offset);
+            int value = BitConverter.ToInt32(_data.RawData, _offset);
             _offset += sizeof(int);
             return value;
         }
         public float LoadFloat()
         {
-            float value = BitConverter.ToSingle(_data, _offset);
+            float value = BitConverter.ToSingle(_data.RawData, _offset);
             _offset += sizeof(float);
             return value;
         }
         public bool LoadBool()
         {
-            bool value = BitConverter.ToBoolean(_data, _offset);
+            bool value = BitConverter.ToBoolean(_data.RawData, _offset);
             _offset += sizeof(bool);
             return value;
         }
         public string LoadString()
         {
-            return System.Text.Encoding.UTF8.GetString(LoadBytes());
+            return _lookUpTable.Get(LoadInt());
         }
         public UnityEngine.Vector2 LoadVector2()
         {

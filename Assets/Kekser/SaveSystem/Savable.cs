@@ -16,6 +16,14 @@ namespace Kekser.SaveSystem
         public Guid Guid => string.IsNullOrEmpty(_guid) ? Guid.NewGuid() : Guid.Parse(_guid);
         public Guid PrefabGuid => string.IsNullOrEmpty(_prefabGuid) ? Guid.NewGuid() : Guid.Parse(_prefabGuid);
 
+        private void Reset()
+        {
+            _guid = "";
+            _prefabGuid = "";
+            
+            OnValidate();
+        }
+        
         private void OnValidate()
         {
 #if UNITY_EDITOR

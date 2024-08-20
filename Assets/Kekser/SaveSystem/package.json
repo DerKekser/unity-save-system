@@ -2,7 +2,7 @@
     "name": "com.kekser.savesystem",
     "displayName": "SaveSystem",
     "author": { "name": "Kekser", "url": "https://github.com/DerKekser" },
-    "version": "1.1.4",
+    "version": "1.1.5",
     "unity": "2020.3",
     "description": "A save system for unity.",
     "keywords": [ "save", "load" ],

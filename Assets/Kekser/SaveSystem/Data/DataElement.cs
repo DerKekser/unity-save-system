@@ -1,8 +1,10 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Scripting;
 
 namespace Kekser.SaveSystem.Data
 {
+    [Preserve]
     public class DataElement : IData
     {
         private SaveBuffer _data;

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using UnityEngine.Scripting;
 
 namespace Kekser.SaveSystem.Data
 {
+    [Preserve]
     public class DataArray : IData
     {
         private List<IData> _data;

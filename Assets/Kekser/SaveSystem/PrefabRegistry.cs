@@ -5,16 +5,13 @@ namespace Kekser.SaveSystem
     public class PrefabRegistry : ScriptableObject
     {
         private static PrefabRegistry _prefabRegistry;
-        private static bool _isLoaded;
+        // A missing registry is looked up again next time (it may have been created since).
         public static PrefabRegistry Registry
         {
             get
             {
-                if (!_isLoaded)
-                {
+                if (_prefabRegistry == null)
                     _prefabRegistry = Resources.Load<PrefabRegistry>("PrefabRegistry");
-                    _isLoaded = true;
-                }
                 return _prefabRegistry;
             }
         }

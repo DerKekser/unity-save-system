@@ -8,8 +8,9 @@ namespace Kekser.SaveSystem
     [CustomEditor(typeof(PrefabRegistry))]
     public class PrefabRegistryEditor : Editor
     {
+        /// <summary>Creates or refreshes Resources/PrefabRegistry with every prefab that has a Savable.</summary>
         [MenuItem("Tools/Save System/Update Prefabs")]
-        private static void UpdatePrefabs()
+        public static void UpdatePrefabs()
         {
             PrefabRegistry prefabRegistry = (PrefabRegistry) AssetDatabase.LoadAssetAtPath("Assets/Resources/PrefabRegistry.asset", typeof(PrefabRegistry));
             if (prefabRegistry == null)
@@ -22,6 +23,7 @@ namespace Kekser.SaveSystem
             }
             prefabRegistry.Prefabs = GetPrefabs();
             EditorUtility.SetDirty(prefabRegistry);
+            AssetDatabase.SaveAssets();
         }
         
         public override void OnInspectorGUI()
@@ -44,7 +46,7 @@ namespace Kekser.SaveSystem
             {
                 string path = AssetDatabase.GUIDToAssetPath(guids[i]);
                 GameObject go = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-                Savable savable = go.GetComponentInChildren<Savable>();
+                Savable savable = go != null ? go.GetComponentInChildren<Savable>(true) : null;
                 if (savable != null)
                     prefabs.Add(savable);
             }

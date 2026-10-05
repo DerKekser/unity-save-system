@@ -6,26 +6,36 @@ using Kekser.SaveSystem.Utils;
 
 namespace Kekser.SaveSystem
 {
+    /// <summary>A whole save file: its strings are kept once, in a table of its own written in front of the data.</summary>
     public class LookUpSaveBuffer : SaveBuffer
     {
         public LookUpSaveBuffer() : base()
         {
+            Table = new LookUpTable();
         }
         
-        public LookUpSaveBuffer(byte[] data) : base(data)
+        public LookUpSaveBuffer(byte[] data) : base()
         {
+            Table = new LookUpTable();
+            Data = data;
         }
         
         public override byte[] Data
         {
-            get => _lookUpTable.PrependHeader(base.Data);
-            set => base.Data = _lookUpTable.RemoveHeader(value);
+            get => Table.PrependHeader(base.Data);
+            set => base.Data = Table.RemoveHeader(value);
         }
     }
     
     public class SaveBuffer
     {
         protected static LookUpTable _lookUpTable = new LookUpTable();
+
+        /// <summary>Clears the shared string table (the one buffers use unless they are given their own).</summary>
+        public static void ClearLookUpTable() => _lookUpTable.Clear();
+
+        /// <summary>The string table strings are written to and read from (save files have their own).</summary>
+        public LookUpTable Table { get; set; } = _lookUpTable;
         
         public SaveBuffer()
         {
@@ -75,7 +85,7 @@ namespace Kekser.SaveSystem
         }
         public void SaveString(string value)
         {
-            SaveInt(_lookUpTable.Add(value));
+            SaveInt(Table.Add(value));
         }
         public void SaveVector2(UnityEngine.Vector2 value)
         {
@@ -212,12 +222,13 @@ namespace Kekser.SaveSystem
                 SaveGuid(guid);
             else if (obj is UnityEngine.GameObject gameObject)
                 SaveGameObject(gameObject);
+            // arrays are ILists too, but without the generic argument SaveList reads
+            else if (obj.GetType().IsArray)
+                SaveArray((Array)obj);
             else if (obj is IList list)
                 SaveList(list);
             else if (obj is IDictionary dictionary)
                 SaveDictionary(dictionary);
-            else if (obj.GetType().IsArray)
-                SaveArray((Array)obj);
             else if (obj.GetType().IsEnum)
                 SaveInt((int)obj);
             else if (obj.GetType().IsClass)
@@ -255,7 +266,7 @@ namespace Kekser.SaveSystem
         }
         public string LoadString()
         {
-            return _lookUpTable.Get(LoadInt());
+            return Table.Get(LoadInt());
         }
         public UnityEngine.Vector2 LoadVector2()
         {

@@ -24,9 +24,11 @@ namespace Kekser.SaveSystem
             CheckForSavables();
         }
         
+        private static bool _checkQueued;
+        
         private static void OnChangesPublished(ref ObjectChangeEventStream stream)
         {
-            if (Application.isPlaying)
+            if (Application.isPlaying || _checkQueued)
                 return;
             
             for (int i = 0; i < stream.length; i++)
@@ -38,8 +40,14 @@ namespace Kekser.SaveSystem
                     case ObjectChangeKind.ChangeScene:
                     case ObjectChangeKind.CreateGameObjectHierarchy:
                     case ObjectChangeKind.ChangeGameObjectOrComponentProperties:
-                        CheckForSavables();
-                        break;
+                        // One scan once the burst of changes is over, not one per change.
+                        _checkQueued = true;
+                        EditorApplication.delayCall += () =>
+                        {
+                            _checkQueued = false;
+                            CheckForSavables();
+                        };
+                        return;
                 }
             }
         }
@@ -51,13 +59,13 @@ namespace Kekser.SaveSystem
                 return;
             
             SaveAttributeManager.CacheTypes();
-            List<Type> types = new List<Type>(SaveAttributeManager.CachedNonStaticTypes);
             
-            GameObject[] gameObjects = GameObject.FindObjectsOfType<GameObject>(true);
+            HashSet<Type> types = new HashSet<Type>(SaveAttributeManager.CachedNonStaticTypes);
+            GameObject[] gameObjects = SaveSystemUtils.FindAll<GameObject>();
             List<GameObject> gameObjectsToSave = new List<GameObject>();
             foreach (GameObject go in gameObjects)
             {
-                if (go.GetComponentInParent<Savable>() != null)
+                if (go.scene.name == null || SaveAttributeManager.HasSavableInParents(go.transform))
                     continue;
                 
                 List<Component> savableComponents = new List<Component>(go.GetComponents<Component>());

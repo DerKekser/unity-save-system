@@ -18,14 +18,47 @@ namespace Kekser.SaveSystem.Data
 
         public IData Get(string key)
         {
-            _data.TryGetValue(key, out var value);
+            IData value = null;
+            _data?.TryGetValue(key, out value);
             return value;
         }
 
         public T Get<T>(string key) where T : IData
         {
-            _data.TryGetValue(key, out var value);
-            return (T)value;
+            IData value = null;
+            _data?.TryGetValue(key, out value);
+            return value is T typed ? typed : default;
+        }
+
+        /// <summary>Stores a value of any supported type (shorthand for Add(key, new DataElement(value))).</summary>
+        public void SetValue(string key, object value)
+        {
+            Add(key, new DataElement(value));
+        }
+
+        /// <summary>Reads a value stored with <see cref="SetValue"/> or a DataElement; false if the key is missing.</summary>
+        public bool TryGetValue<T>(string key, out T value)
+        {
+            if (Get(key) is DataElement element)
+            {
+                try
+                {
+                    value = element.ToObject<T>();
+                    return true;
+                }
+                catch (System.Exception e)
+                {
+                    UnityEngine.Debug.LogWarning($"Could not read \"{key}\" as {typeof(T).Name}: {e.Message}");
+                }
+            }
+            value = default;
+            return false;
+        }
+
+        /// <summary>Reads a value, or <paramref name="fallback"/> if the key is missing (e.g. in older saves).</summary>
+        public T GetValue<T>(string key, T fallback = default)
+        {
+            return TryGetValue(key, out T value) ? value : fallback;
         }
 
         public void Remove(string key)

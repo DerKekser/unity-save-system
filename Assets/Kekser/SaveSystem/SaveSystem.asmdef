@@ -1,7 +1,9 @@
 {
     "name": "SaveSystem",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "Unity.InputSystem"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -9,6 +11,12 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "1.0.0",
+            "define": "KEKSER_INPUT_SYSTEM"
+        }
+    ],
     "noEngineReferences": false
 }

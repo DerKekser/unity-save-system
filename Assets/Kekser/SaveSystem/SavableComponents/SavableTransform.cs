@@ -16,8 +16,17 @@ namespace Kekser.SaveSystem.SavableComponents
         [Load]
         public void Load(DataObject dataObject)
         {
-            transform.position = dataObject.Get<DataElement>("Position").ToObject<Vector3>();
-            transform.rotation = dataObject.Get<DataElement>("Rotation").ToObject<Quaternion>();
+            transform.SetPositionAndRotation(dataObject.GetValue("Position", transform.position),
+                dataObject.GetValue("Rotation", transform.rotation));
+            // A rigidbody keeps its old pose until the next physics step otherwise.
+            if (TryGetComponent(out Rigidbody body))
+            {
+                bool sleeping = body.IsSleeping();
+                body.position = transform.position;
+                body.rotation = transform.rotation;
+                if (sleeping)
+                    body.Sleep();
+            }
         }
     }
 }

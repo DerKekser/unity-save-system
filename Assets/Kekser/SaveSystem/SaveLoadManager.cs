@@ -11,6 +11,12 @@ namespace Kekser.SaveSystem
 {
     public class SaveLoadManager : MonoBehaviour
     {
+        /// <summary>True while a save or load runs.</summary>
+        public static bool IsBusy { get; private set; }
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => IsBusy = false;
+
         private static void EnsureFolderExists(string path)
         {
             string directory = Path.GetDirectoryName(path);
@@ -20,42 +26,73 @@ namespace Kekser.SaveSystem
                 return;
             Directory.CreateDirectory(directory);
         }
-        
-        public static async Task<bool> Save(string file)
+
+        public static Task<bool> Save(string file) => Save(file, null);
+
+        /// <summary>
+        /// Saves the active scene. <paramref name="meta"/> is stored next to the scene data and can be read back
+        /// without loading the save (<see cref="LoadMeta"/>), e.g. a version or what a save slot shows.
+        /// </summary>
+        public static Task<bool> Save(string file, DataObject meta)
         {
+            if (IsBusy)
+            {
+                Debug.LogError("Save/Load already in progress.");
+                return Task.FromResult(false);
+            }
+            IsBusy = true;
             try
             {
                 DataObject dataObject = new DataObject();
                 dataObject.Add("Scene", new DataElement(SceneManager.GetActiveScene().name));
+                if (meta != null)
+                    dataObject.Add("Meta", meta);
                 SaveAttributeManager.Save(dataObject);
-                
+
                 LookUpSaveBuffer saveData = new LookUpSaveBuffer();
                 dataObject.DataSerialize(saveData);
-                
+
                 EnsureFolderExists(file);
-                File.WriteAllBytes(file, Compress(saveData.Data));
-                return true;
+                // Write next to the file first, so a crash mid-write never leaves a broken save behind.
+                string temp = file + ".tmp";
+                File.WriteAllBytes(temp, Compress(saveData.Data));
+                if (File.Exists(file))
+                    File.Delete(file);
+                File.Move(temp, file);
+                return Task.FromResult(true);
             }
             catch (Exception e)
             {
                 Debug.LogError(e);
-                return false;
+                return Task.FromResult(false);
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
 
-        public static async Task<bool> Load(string file)
+        public static Task<bool> Load(string file) => Load(file, false);
+
+        /// <summary>
+        /// Loads a save. With <paramref name="reloadScene"/> the scene is loaded fresh even if it is already active,
+        /// so no runtime state from before the load is left over.
+        /// </summary>
+        public static async Task<bool> Load(string file, bool reloadScene)
         {
             if (!File.Exists(file))
                 return false;
+            if (IsBusy)
+            {
+                Debug.LogError("Save/Load already in progress.");
+                return false;
+            }
+            IsBusy = true;
             try
             {
-                byte[] data = Decompress(File.ReadAllBytes(file));
-                LookUpSaveBuffer saveData = new LookUpSaveBuffer(data);
-                
-                DataObject dataObject = new DataObject();
-                dataObject.DataDeserialize(saveData);
+                DataObject dataObject = Read(file);
                 string sceneName = dataObject.Get<DataElement>("Scene").ToObject<string>();
-                if (sceneName != SceneManager.GetActiveScene().name)
+                if (reloadScene || sceneName != SceneManager.GetActiveScene().name)
                 {
                     AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
                     while (!operation.isDone)
@@ -72,15 +109,49 @@ namespace Kekser.SaveSystem
                 Debug.LogError(e);
                 return false;
             }
+            finally
+            {
+                IsBusy = false;
+            }
         }
-        
+
+        /// <summary>Reads only the meta data a save was written with (null if there is none or it can't be read).</summary>
+        public static DataObject LoadMeta(string file)
+        {
+            if (!File.Exists(file) || IsBusy)
+                return null;
+            IsBusy = true;
+            try
+            {
+                return Read(file).Get<DataObject>("Meta");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                return null;
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private static DataObject Read(string file)
+        {
+            byte[] data = Decompress(File.ReadAllBytes(file));
+            LookUpSaveBuffer saveData = new LookUpSaveBuffer(data);
+
+            DataObject dataObject = new DataObject();
+            dataObject.DataDeserialize(saveData);
+            return dataObject;
+        }
+
         public static bool Delete(string file)
         {
             if (!File.Exists(file))
                 return false;
             try
             {
-                Debug.LogWarning("Deleting save file");
                 File.Delete(file);
                 return true;
             }
@@ -102,7 +173,7 @@ namespace Kekser.SaveSystem
                 return ms.ToArray();
             }
         }
-        
+
         public static byte[] Decompress(byte[] bytes)
         {
             using (MemoryStream ms = new MemoryStream())

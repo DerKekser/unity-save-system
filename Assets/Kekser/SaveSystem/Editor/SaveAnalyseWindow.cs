@@ -29,8 +29,8 @@ namespace Kekser.SaveSystem
                 string path = EditorUtility.OpenFilePanel("Open Save File", "", "sav");
                 if (path.Length != 0)
                 {
-                    byte[] data = SaveLoadManager.Decompress(File.ReadAllBytes(Application.persistentDataPath + "/save.sav"));
-                    SaveBuffer saveData = new SaveBuffer(data);
+                    byte[] data = SaveLoadManager.Decompress(File.ReadAllBytes(path));
+                    SaveBuffer saveData = new LookUpSaveBuffer(data);
                 
                     _dataObject = new DataObject();
                     _dataObject.DataDeserialize(saveData);

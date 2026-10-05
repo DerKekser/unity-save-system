@@ -7,18 +7,21 @@ namespace Kekser.SaveSystem.Utils
     {
         private DynamicArray _data = new DynamicArray();
         private List<string> _list = new List<string>();
+        private Dictionary<string, int> _indices = new Dictionary<string, int>();
         
         public void Clear()
         {
             _list.Clear();
+            _indices.Clear();
         }
         
         public int Add(string value)
         {
-            if (_list.Contains(value))
-                return _list.IndexOf(value);
+            if (_indices.TryGetValue(value, out int index))
+                return index;
             
             _list.Add(value);
+            _indices.Add(value, _list.Count - 1);
             return _list.Count - 1;
         }
         
@@ -43,6 +46,8 @@ namespace Kekser.SaveSystem.Utils
         
         public byte[] RemoveHeader(byte[] data)
         {
+            // The file's indices start at 0: anything left from an earlier save or load would shift them.
+            Clear();
             _data.Data = data;
             int count = BitConverter.ToInt32(_data.RawData, 0);
             int offset = sizeof(int);
@@ -51,10 +56,13 @@ namespace Kekser.SaveSystem.Utils
                 int length = BitConverter.ToInt32(_data.RawData, offset);
                 offset += sizeof(int);
                 string value = System.Text.Encoding.UTF8.GetString(_data.GetBytes(offset, length));
+                // Positional: older saves can hold the same string twice.
+                if (!_indices.ContainsKey(value))
+                    _indices.Add(value, _list.Count);
                 _list.Add(value);
                 offset += length;
             }
-            return _data.GetBytes(offset, _data.RawData.Length - offset);
+            return _data.GetBytes(offset, data.Length - offset);
         }
     }
 }

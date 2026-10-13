@@ -71,7 +71,7 @@ namespace Kekser.SaveSystem
             if (Application.isPlaying)
                 return;
 
-            if (gameObject.scene.name == null)
+            if (IsPrefabContents)
             {
                 _guid = "";
 
@@ -109,6 +109,14 @@ namespace Kekser.SaveSystem
 
 #endif
         }
+
+#if UNITY_EDITOR
+        // The prefab asset itself, or its contents opened for editing (Prefab Mode, PrefabUtility.LoadPrefabContents):
+        // the latter live in a preview scene and must keep the prefab's guid, not be taken for scene objects (which
+        // have no source prefab there, so the guid was cleared and the saved prefab got a new one: older saves lost it).
+        private bool IsPrefabContents => gameObject.scene.name == null
+            || UnityEditor.SceneManagement.EditorSceneManager.IsPreviewScene(gameObject.scene);
+#endif
 
         private void Awake()
         {

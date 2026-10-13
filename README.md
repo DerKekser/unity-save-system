@@ -75,6 +75,10 @@ You can create and update the prefab registry by clicking on `Tools/Save System/
 
 This is a manual process, and needs to be done every time you add a new prefab to your project.
 
+A prefab is found again by the guid its `Savable` keeps, so older saves rely on it staying the same. Editing a prefab
+(in Prefab Mode or through `PrefabUtility.LoadPrefabContents`) keeps it; before 1.3.1 saving such an edit gave the
+prefab a new guid.
+
 ![Prefab Registry](/Assets/Kekser/Screenshots/create_update_prefab_registry.png)
 
 ### Create your own Savable Component
